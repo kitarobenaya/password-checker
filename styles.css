@@ -1,0 +1,84 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0d0d0d;
+  width: 100%;
+  height: 100vh;
+  color: #00ff00;
+  font-family: monospace;
+}
+
+header.opening {
+  font-size: 1rem;
+  font-family: monospace;
+  color: #00ff00;
+  pointer-events: none;
+  max-height: 450px; /* batasi supaya gak niban ke bawah */
+  overflow: hidden;
+  cursor: text;
+}
+
+header.opening pre {
+  width: fit-content;
+  height: fit-content;
+}
+
+header.opening pre.title {
+  font-size: 1.5rem;
+  border: 5px dashed #00ff00;
+}
+
+main {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+  row-gap: 10px;
+}
+
+main section.input {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  column-gap: 5px;
+  font-size: 1rem;
+  font-family: monospace;
+  color: #00ff00;
+}
+
+main section.input input {
+  width: 99%;
+  background-color: transparent;
+  border: transparent;
+  color: #00ff00;
+  text-decoration: none;
+}
+
+main section.input input:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
+main section.output {
+  width: 100%;
+  height: auto;
+}
+
+main section.output ul {
+  width: auto;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+}
+
+main section.output ul li {
+  list-style: none;
+}
