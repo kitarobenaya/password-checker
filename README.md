@@ -16,6 +16,10 @@ A web-based terminal simulation that checks password strength and verifies it ag
 - Responsive for desktop and mobile use
 - Keyboard support: press `Ctrl + C` or `s` to stop a wordlist check in progress
 
+## 🌐 Live Demo
+
+[Click to open the app](https://kitarobenaya.github.io/password-checker/)
+
 ## 💡 How to Use
 
 1. Open the web app in your browser
