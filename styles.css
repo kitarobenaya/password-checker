@@ -28,12 +28,8 @@ header.opening {
 }
 
 header.opening pre {
-  width: 100%;
-  height: auto;
-  margin: 0;
-  padding: 0;
-  white-space: pre-wrap;
-  word-break: break-all;
+  width: fit-content;
+  height: fit-content;
 }
 
 header.opening pre.title {
