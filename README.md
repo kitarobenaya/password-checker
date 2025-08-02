@@ -22,14 +22,6 @@ A web-based terminal simulation that checks password strength and verifies it ag
 2. Type `check-password <yourpassword>` and press Enter
 3. Wait for the results to display
 4. Type `help` to view other available commands
-
-## 📁 Project Structure
-
-├── index.html
-├── styles.css
-├── script.js
-└── wordlist
-        └── password.txt
         
 ## 🛠️ Built With
 
