@@ -30,3 +30,36 @@ A web-based terminal simulation that checks password strength and verifies it ag
 ├── script.js
 └── wordlist
         └── password.txt
+        
+## 🛠️ Built With
+
+- HTML5
+- CSS3
+- JavaScript (Vanilla)
+
+## 📝 Technical Notes
+
+- `autocapitalize="off"` is used to avoid automatic uppercase on mobile devices
+- No external libraries or frameworks are used
+- The `password.txt` file can be replaced with any other wordlist (beware of large file sizes)
+- Loop delay (`awaitLoop()`) and loop-stopping functionality added for large wordlist performance
+
+## 🧠 Learning Objectives
+
+This project was built to practice and demonstrate:
+
+- DOM manipulation
+- Advanced event handling
+- Async/await and Promises
+- Performance timing
+- Data persistence with localStorage
+- Responsive and interactive UI design
+
+## 👤 Author
+
+**Kitaro Benaya**  
+[GitHub](https://github.com/kitarobenaya)
+
+---
+
+> 💬 Feel free to fork, use, or adapt this project for learning or personal development!
