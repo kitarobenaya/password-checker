@@ -13,8 +13,6 @@ body {
 }
 
 header.opening {
-  width: fit-content;
-  height: auto;
   font-size: 1rem;
   font-family: monospace;
   color: #00ff00;
