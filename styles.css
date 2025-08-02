@@ -18,7 +18,11 @@ header.opening {
   color: #00ff00;
   pointer-events: none;
   max-height: 450px; /* batasi supaya gak niban ke bawah */
-  overflow: hidden;
+  overflow-y: hidden;
+  overflow-x: auto;
+  max-width: 100%;
+  padding: 1rem;
+  border-radius: 4px;
   cursor: text;
 }
 
