@@ -23,6 +23,7 @@ output.addEventListener("keydown", (e) => {
       e.preventDefault();
       const value = e.target.value;
       handleCommand(value);
+      e.target.setAttribute("disabled", "true");
     }
   }
 });
@@ -154,7 +155,19 @@ async function handleCommand(input) {
       });
       newCommandLine();
     }
-}
+  } else {
+    const errorText = `
+    <section class="output">
+      <ul>
+        <li class='lierror'>[✖] Error: Command not found.</li>
+        <li class='lierror'>[i] Type 'help' for a list of available commands.</li>
+      </ul>
+    </section>
+    `;
+    output.insertAdjacentHTML("beforeend", errorText);
+    localStore(generateUID(), input, errorText);
+    newCommandLine();
+  }
 }
 
 // Function to create a delay
