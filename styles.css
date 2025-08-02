@@ -13,11 +13,12 @@ body {
 }
 
 header.opening {
+  width: fit-content;
+  height: auto;
   font-size: 1rem;
   font-family: monospace;
   color: #00ff00;
-  pointer-events: none;
-  max-height: 450px; /* batasi supaya gak niban ke bawah */
+  max-height: 450px;
   overflow-y: hidden;
   overflow-x: auto;
   max-width: 100%;
@@ -27,8 +28,12 @@ header.opening {
 }
 
 header.opening pre {
-  width: fit-content;
-  height: fit-content;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 
 header.opening pre.title {
