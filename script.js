@@ -47,6 +47,10 @@ async function handleCommand(input) {
     sectionload.classList.add("output");
     sectionload.innerHTML = `<ul><li>[⏳] Checking password...</li><ul>`;
     output.appendChild(sectionload);
+    const control = document.createElement("section");
+    control.classList.add("output");
+    control.innerHTML = `<ul><i>Ctrl + C to stop</i></ul>`;
+    output.appendChild(control);
     output.scrollIntoView({ behavior: "smooth", block: "end" });
 
     const start = performance.now();
@@ -93,7 +97,7 @@ async function handleCommand(input) {
         <ul>
           <li class='lipass'>[✔] Password: ${value}</li>
           <li class='lipoin'>[!] Strength: ${poin}/5</li>
-          <li class='liinfo'>[i] Info: ${info}</li>
+          <li class='liinfo' style="color: red;">[i] Info: ${info}</li>
           <li class='litime'>[i] Crack time: ${
             (end - start) / 1000
           } seconds</li>
@@ -101,6 +105,7 @@ async function handleCommand(input) {
         </section>
         `;
     sectionload.remove();
+    control.remove();
     output.insertAdjacentHTML("beforeend", HTMLstring);
     newCommandLine();
     localStore(
@@ -110,16 +115,46 @@ async function handleCommand(input) {
     <ul>
       <li class='lipass'>[✔] Password: ${value}</li>
       <li class='lipoin'>[!] Strength: ${poin}/5</li>
-      <li class='liinfo'>[i] Info: ${info}</li>
+      <li class='liinfo' style="color: red;">[i] Info: ${info}</li>
       <li class='litime'>[i] Crack time: ${(end - start) / 1000} seconds</li>
     </ul>
     `
     );
+
   } else if (command == "clear") {
     output.innerHTML = "";
-    localStorage.clear();
+    localStorage.removeItem("terminal-history");
     newCommandLine();
-  }
+
+  } else if (command == "help") {
+    const helpText = `
+    <section class="output">
+      <ul>
+        <li class='lihelp'>[i] Available commands:</li>
+        <li class='lihelp'>- <strong>check-password</strong> [password]: Check the strength of a password.</li>
+        <li class='lihelp'>- <strong>clear</strong>: Clear the terminal output and history.</li>
+        <li class='lihelp'>- <strong>help</strong>: Show this help message.</li>
+        <li class='lihelp'>- <strong>history</strong>: Show command history.</li>
+      </ul>
+    </section>
+    `;
+    output.insertAdjacentHTML("beforeend", helpText);
+    localStore(generateUID(), input, helpText);
+    newCommandLine();
+
+  } else if (command == "history") {
+    const storedData = localStorage.getItem("terminal-history");
+    if (storedData) {
+      const data = JSON.parse(storedData);
+      data.forEach((item) => {
+        const sectionOut = document.createElement("section");
+        sectionOut.classList.add("output");
+        sectionOut.innerHTML = item.command;
+        output.appendChild(sectionOut);
+      });
+      newCommandLine();
+    }
+}
 }
 
 // Function to create a delay
