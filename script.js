@@ -3,6 +3,7 @@ const output = document.querySelector("main");
 
 // focusing input
 input.focus();
+
 document.addEventListener("click", (e) => {
   const tag = e.target.tagName.toLowerCase();
   if (!["input", "textarea", "button"].includes(tag)) {
@@ -16,25 +17,6 @@ document.addEventListener("click", (e) => {
   });
 });
 
-output.addEventListener("load", (e) => {
-  if (e.target.classList.contains("command-input")) {
-    e.target.focus();
-
-    document.addEventListener("click", (e) => {
-      const tag = e.target.tagName.toLowerCase();
-      if (!["input", "textarea", "button"].includes(tag)) {
-        input.focus();
-      }
-    });
-
-    document.addEventListener("keydown", () => {
-      if (document.activeElement !== input) {
-        input.focus();
-      }
-    });
-  }
-});
-
 output.addEventListener("keydown", (e) => {
   if (e.target.classList.contains("command-input")) {
     if (e.key === "Enter") {
@@ -45,12 +27,14 @@ output.addEventListener("keydown", (e) => {
   }
 });
 
+// Function to handle commands
 async function handleCommand(input) {
   const split = input.split(" ");
   const command = split[0];
   const value = split[1];
   let poin = 0;
   let info = "";
+  let stopLoop = false;
 
   if (command == "check-password") {
     value.length > 8 ? (poin += 1) : (poin += 0);
@@ -59,19 +43,47 @@ async function handleCommand(input) {
     /[0-9]/.test(value) ? (poin += 1) : (poin += 0);
     /[\W]/.test(value) ? (poin += 1) : (poin += 0);
 
+    const sectionload = document.createElement("section");
+    sectionload.classList.add("output");
+    sectionload.innerHTML = `<ul><li>[⏳] Checking password...</li><ul>`;
+    output.appendChild(sectionload);
+    output.scrollIntoView({ behavior: "smooth", block: "end" });
+
     const start = performance.now();
-    const getWords = await fetch("password.txt")
+
+    // Fetch the wordlist from the assets folder
+    const getWords = await fetch("assets/wordlist/password.txt")
       .then((words) => words.text())
       .then((word) => word.split("\n"));
 
+    document.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.key === "c") {
+        info = "password check stopped by user";
+        output.scrollIntoView({ behavior: "smooth", block: "end" });
+        stopLoop = true;
+      }
+    });
+
+    // Loop through the wordlist and check for the password
     for (i = 0; i < getWords.length; i++) {
+      if (stopLoop) {
+        break;
+      }
+
+      if (i % 200 === 0) {
+        sectionload.innerHTML += `<ul><li class="liinfo">[⏳] Checking... Tried ${i} words</li><ul>`;
+        output.scrollIntoView({ behavior: "smooth", block: "end" });
+      }
+
       if (getWords[i] == value) {
         info = "password found in the wordlists";
         break;
       }
+
+      await awaitLoop(1);
     }
 
-    if (info !== "password found in the wordlists") {
+    if (info === "") {
       info = "password not found in the wordlists";
     }
 
@@ -88,6 +100,7 @@ async function handleCommand(input) {
         </ul>
         </section>
         `;
+    sectionload.remove();
     output.insertAdjacentHTML("beforeend", HTMLstring);
     newCommandLine();
     localStore(
@@ -109,10 +122,19 @@ async function handleCommand(input) {
   }
 }
 
+// Function to create a delay
+function awaitLoop(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+// Function to generate a unique identifier
 function generateUID() {
   return Math.random().toString(36).substring(2, 9);
 }
 
+// Function to store command history in local storage
 function localStore(uid, command, output) {
   const data = [];
   const storedData = localStorage.getItem("terminal-history");
@@ -128,9 +150,10 @@ function localStore(uid, command, output) {
   localStorage.setItem("terminal-history", JSON.stringify(data));
 }
 
+// Function to load command history from local storage
 function loadLocalStore() {
   const storedData = localStorage.getItem("terminal-history");
-  
+
   if (storedData) {
     output.innerHTML = "";
     const data = JSON.parse(storedData);
@@ -151,8 +174,10 @@ function loadLocalStore() {
   }
 }
 
+// Load command history from local storage on page load
 loadLocalStore();
 
+// Function to create a new command line input
 function newCommandLine() {
   const sectionIn = document.createElement("section");
   sectionIn.classList.add("input");
