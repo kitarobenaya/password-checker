@@ -229,7 +229,7 @@ loadLocalStore();
 function newCommandLine() {
   const sectionIn = document.createElement("section");
   sectionIn.classList.add("input");
-  sectionIn.innerHTML = `&gt; <input type="text" class="command-input" autocapitalize="off" spellcheck="false" />`;
+  sectionIn.innerHTML = `&gt; <input type="text" class="command-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />`;
   output.appendChild(sectionIn);
   const commandInput = sectionIn.querySelector(".command-input");
   commandInput.focus();
