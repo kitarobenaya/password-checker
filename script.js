@@ -57,7 +57,7 @@ async function handleCommand(input) {
     const start = performance.now();
 
     // Fetch the wordlist from the assets folder
-    const getWords = await fetch("assets/wordlist/password.txt")
+    const getWords = await fetch("wordlist/password.txt")
       .then((words) => words.text())
       .then((word) => word.split("\n"));
 
