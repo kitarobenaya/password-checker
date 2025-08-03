@@ -50,9 +50,17 @@ async function handleCommand(input) {
     output.appendChild(sectionload);
     const control = document.createElement("section");
     control.classList.add("output");
-    control.innerHTML = `<ul><i>Ctrl + c to stop Or s in mobile</i></ul>`;
+    control.innerHTML = `<ul><i>Ctrl + c to stop Or Click <button type='button' class='stopButton'>Stop</button> button</i></ul>`;
     output.appendChild(control);
     output.scrollIntoView({ behavior: "smooth", block: "end" });
+
+    // initialize the stop button
+    const stopButton = control.querySelector(".stopButton");
+    stopButton.addEventListener("click", () => {
+      info = "password check stopped by user";
+      output.scrollIntoView({ behavior: "smooth", block: "end" });
+      stopLoop = true;
+    });
 
     const start = performance.now();
 
@@ -62,7 +70,7 @@ async function handleCommand(input) {
       .then((word) => word.split("\n"));
 
     document.addEventListener("keydown", (e) => {
-      if (e.ctrlKey && e.key === "c" || e.key === "s") {
+      if (e.ctrlKey && e.key === "c") {
         info = "password check stopped by user";
         output.scrollIntoView({ behavior: "smooth", block: "end" });
         stopLoop = true;
