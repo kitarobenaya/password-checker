@@ -26,6 +26,18 @@ A web-based terminal simulation that checks password strength and verifies it ag
 2. Type `check-password <yourpassword>` and press Enter
 3. Wait for the results to display
 4. Type `help` to view other available commands
+
+## 📦 Installation (optional)
+
+To run this project locally:
+
+1. Clone the repo  
+   `git clone https://github.com/kitarobenaya/password-checker.git`
+
+2. Open `index.html` in your browser  
+   (Make sure to use a local server like [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) for full functionality)
+
+3. Done!
         
 ## 🛠️ Built With
 
@@ -50,6 +62,17 @@ This project was built to practice and demonstrate:
 - Performance timing
 - Data persistence with localStorage
 - Responsive and interactive UI design
+
+## 🎮 Extra: Coding Challenge (Reverse)
+
+This terminal includes a mini coding challenge:
+
+- Type `nano reverse.js` to open a built-in JavaScript editor
+- Write a function `reverseString(str)` that reverses a string
+- Type `node reverse.js` to test your function
+- If correct, you'll see a success message 🎉
+
+This is a simulated terminal challenge, useful for learning how to write functions and understand string manipulation.
 
 ## 👤 Author
 

@@ -129,12 +129,10 @@ async function handleCommand(input) {
     </ul>
     `
     );
-
   } else if (command == "clear") {
     output.innerHTML = "";
     localStorage.removeItem("terminal-history");
     newCommandLine();
-
   } else if (command == "help") {
     const helpText = `
     <section class="output">
@@ -142,6 +140,10 @@ async function handleCommand(input) {
         <li class='lihelp'>[i] Available commands:</li>
         <li class='lihelp'>- <strong>check-password</strong> [password]: Check the strength of a password.</li>
         <li class='lihelp'>- <strong>clear</strong>: Clear the terminal output and history.</li>
+        <li class='lihelp'>- <strong>ls</strong>: Show list of file in the current directory.</li>
+        <li class='lihelp'>- <strong>nano</strong> [file]: Edit a file.</li>
+        <li class='lihelp'>- <strong>node</strong> [file]: Run javascript file.</li>
+        <li class='lihelp'>- <strong>reset</strong> [file]: Reset the value of file.</li>
         <li class='lihelp'>- <strong>help</strong>: Show this help message.</li>
         <li class='lihelp'>- <strong>history</strong>: Show command history.</li>
       </ul>
@@ -150,7 +152,6 @@ async function handleCommand(input) {
     output.insertAdjacentHTML("beforeend", helpText);
     localStore(generateUID(), input, helpText);
     newCommandLine();
-
   } else if (command == "history") {
     const storedData = localStorage.getItem("terminal-history");
     if (storedData) {
@@ -163,6 +164,182 @@ async function handleCommand(input) {
       });
       newCommandLine();
     }
+  } else if (command == "ls") {
+    const file = "reverse.js";
+    const fileText = `
+    <section class="output">
+      <ul>
+        <li class='liinfo'>${file}</li>
+      </ul>
+    </section>
+    `;
+    output.insertAdjacentHTML("beforeend", fileText);
+    localStore(generateUID(), input, fileText);
+    newCommandLine();
+  } else if (command == "nano" && value == "reverse.js") {
+    const nanoText = `
+    <section class="output nano-editor">
+      <ul>
+        <li class='liinfo'>[i] Nano editor opened. Type your code and press Shift + Enter to save.</li>
+        <li class='liinfo'>[i] Press Escape to cancel without saving.</li>
+        <li class='liinfo'>[i] Make a script with javascript to reverse a string example: "hello" -> "olleh"</li>
+      </ul>
+      <textarea class="nano-textarea" spellcheck="false">
+// dont change the name of the function 
+function reverseString(str) {
+// the code to reverse a string goes here
+}
+      </textarea>
+    </section>
+      `;
+    output.insertAdjacentHTML("beforeend", nanoText);
+    const nanoTextarea = output.querySelector(".nano-textarea");
+    output.scrollIntoView({ behavior: "smooth", block: "end" });
+    nanoTextarea.focus();
+
+    const nanoExists = localStorage.getItem("reverse-code");
+    if (nanoExists) {
+      const storedCode = JSON.parse(nanoExists);
+      nanoTextarea.textContent = storedCode[0].code;
+    }
+
+    nanoTextarea.addEventListener("keydown", (e) => {
+      if (e.shiftKey && e.key === "Enter") {
+        e.preventDefault();
+        // validation script input
+        const forbiddenRegex =
+          /\b(document|window|eval|Function|alert|fetch)\b/;
+        const forb = forbiddenRegex.test(nanoTextarea.value);
+        if (forb) {
+          const errorText = `
+          <section class="output">
+            <ul>
+              <li class='lierror'>[✖] Error: Your code contains forbidden words.</li>
+            </ul>
+          </section>
+          `;
+          output.insertAdjacentHTML("beforeend", errorText);
+          localStore(
+            generateUID(),
+            input,
+            errorText,
+            `function reverseString(str) {\n// the code to reverse a string goes here\n}\n      `
+          );
+          output.scrollIntoView({ behavior: "smooth", block: "end" });
+          return;
+        }
+
+        document.querySelector(".nano-editor").remove();
+        const resultText = `
+        <section class="output">
+          <ul>  
+            <li class='liinfo'>[i] Your code was saved.</li>
+          </ul>
+        </section>
+        `;
+        output.insertAdjacentHTML("beforeend", resultText);
+        localStore(generateUID(), input, resultText, nanoTextarea.value);
+        nanoTextarea.remove();
+        newCommandLine();
+      }
+
+      if (e.key === "Escape") {
+        e.preventDefault();
+        nanoTextarea.remove();
+        document.querySelector(".nano-editor").remove();
+        const cancelText = `
+        <section class="output">
+          <ul>
+            <li class='liinfo'>[i] Nano editor closed without saving.</li>
+          </ul>
+        </section>`;
+        output.insertAdjacentHTML("beforeend", cancelText);
+        localStore(generateUID(), input, cancelText, nanoTextarea.value);
+        newCommandLine();
+      }
+    });
+  } else if (command == "node" && value == "reverse.js") {
+  const userCode = localStorage.getItem("reverse-code");
+  if (userCode) {
+    const storedCode = JSON.parse(userCode);
+    const codeToRun = storedCode[0].code;
+
+    try {
+      const blob = new Blob([
+        `
+        onmessage = function(e) {
+          ${codeToRun}
+          try {
+            const result = reverseString("hello");
+            postMessage({ success: true, result });
+          } catch (err) {
+            postMessage({ success: false, error: err.message });
+          }
+        }
+        `
+      ], { type: "application/javascript" });
+
+      const worker = new Worker(URL.createObjectURL(blob));
+      worker.postMessage(""); // kita kirim pesan kosong, hanya untuk trigger
+
+      worker.onmessage = function(e) {
+        let resultText = "";
+
+        if (e.data.success && e.data.result === "olleh") {
+          resultText = `
+            <section class="output">
+              <ul>
+                <li class='liinfo'>[✔] Result: Selamat kamu berhasil !</li>
+              </ul>
+            </section>
+          `;
+        } else if (e.data.success) {
+          resultText = `
+            <section class="output">
+              <ul>
+                <li class='liinfo'>[x] Result: ${e.data.result}</li>
+              </ul>
+            </section>
+          `;
+        } else {
+          resultText = `
+            <section class="output">
+              <ul>
+                <li class='lierror'>[✖] Error: ${e.data.error}</li>
+              </ul>
+            </section>
+          `;
+        }
+
+        output.insertAdjacentHTML("beforeend", resultText);
+        localStore(generateUID(), input, resultText, codeToRun);
+        newCommandLine();
+      };
+
+    } catch (error) {
+      const errorText = `
+        <section class="output">
+          <ul>
+            <li class='lierror'>[✖] Error: ${error.message}</li>
+          </ul>
+        </section>
+      `;
+      output.insertAdjacentHTML("beforeend", errorText);
+      localStore(generateUID(), input, errorText, codeToRun);
+      newCommandLine();
+    }
+  }
+} else if (command == "reset" && value == "reverse.js") {
+    const resetText = `
+    <section class="output">
+    <ul>
+    <li class='liinfo'>[i] Reset successful.</li>
+    </ul>
+    </section>
+    `;
+    output.insertAdjacentHTML("beforeend", resetText);
+    localStorage.removeItem("reverse-code");
+    newCommandLine();
   } else {
     const errorText = `
     <section class="output">
@@ -191,11 +368,20 @@ function generateUID() {
 }
 
 // Function to store command history in local storage
-function localStore(uid, command, output) {
+function localStore(
+  uid,
+  command,
+  output,
+  code = `// dont change the name of the function\nfunction reverseString(str) {\n// the code to reverse a string goes here\n}\n      `
+) {
   const data = [];
+  const codeData = [];
   const storedData = localStorage.getItem("terminal-history");
   if (storedData) {
     const existingData = JSON.parse(storedData);
+    if (existingData.length > 10) {
+      existingData.shift();
+    }
     data.push(...existingData);
   }
   data.push({
@@ -203,6 +389,11 @@ function localStore(uid, command, output) {
     command: command,
     output: output,
   });
+  codeData.push({
+    uid: uid,
+    code: code,
+  });
+  localStorage.setItem("reverse-code", JSON.stringify(codeData));
   localStorage.setItem("terminal-history", JSON.stringify(data));
 }
 
